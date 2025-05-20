@@ -6,42 +6,44 @@
     <div>
       <form>
         <div>
-          <label for="ef">ECMOFlow</label>
+          <label for="ef">ECMOFlow l/min</label>
           <input type="number" id="ef" v-model="ECMOFlow"/>
-          <label for="satA">SatA%O2</label>
+          <label for="satA">Sat Art O2%</label>
           <input type="number" id="satA" v-model="SatA" />
         </div>
         <div>
-          <label for="satR">SatRet%O2</label>
+          <label for="satR">Sat Ret O2%</label>
           <input type="number" id="satR" v-model="SatR" />
-          <label for="satCV">Sat Ctl Ven</label>
+          <label for="satCV">Sat Ctl Ven O2%</label>
           <input type="number" id="satCV" v-model="SatCV" />
         </div>
         <div>
-          <label for="satD">SatDrain%O2</label>
+          <label for="satD">Sat Drain O2%</label>
           <input type="number" id="satD" v-model="SatD" />
-          <label for="Hb">Hb</label>
+          <label for="Hb">Hb dl/l</label>
           <input type="number" id="Hb" v-model="Hb" />
         </div>
         <div>
-          <label for="BSA">BSA</label>
+          <label for="BSA">BSA m²</label>
           <input type="number" id="BSA" v-model="BSA"/>
         </div>
       </form>
-      <p>RecirculationFactor: <span :class="RFStyle">{{RecirculationFactor}}</span></p>
-      <p>CardiacOutput: {{CardiacOutput}}</p>
-      <p>OxygenDelivery: {{OxygenDelivery}}</p>
-      <p>OxygenConsumption: {{OxygenConsumption}}</p>
-      <p>Real OxygenDelivery: {{OxygenDeliveryReal}}</p>
-      <p>CarringCapacityOfArterialBlood: {{CarringCapacityOfArterialBlood}}</p>
-      <p>CarringCapacityOfVenousBlood: {{CarringCapacityOfVenousBlood}}</p>
+      <p>Recirculation Factor: <span :class="RFStyle">{{RecirculationFactor.toFixed(2)}}</span></p>
+      <p>Cardiac Output l/min: <span  v-if="HideOtherValues">{{CardiacOutput.toFixed(2)}}</span></p>
+      <p>Oxygen Delivery dl/min: <span v-if="HideOtherValues">{{OxygenDelivery.toFixed(2)}}</span></p>
+      <p>Oxygen Consumption dl/min: <span v-if="HideOtherValues">{{OxygenConsumption.toFixed(2)}}</span></p>
+      <p>Real OxygenDelivery dl/min/m²: <span v-if="HideOtherValues">{{OxygenDeliveryReal.toFixed(2)}}</span></p>
+      <p>Carring Capacity Of Arterial Blood ml/min: <span v-if="HideOtherValues">{{CarringCapacityOfArterialBlood.toFixed(2)}}</span></p>
+      <p>Carring Capacity Of Venous Blood ml/min: <span v-if="HideOtherValues">{{CarringCapacityOfVenousBlood.toFixed(2)}}</span></p>
     </div>
   </main>
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { ref, computed } from 'vue';
 
+const RECIRCULATION_FACTOR_THRESHOLD_1 = 1.15;
+const RECIRCULATION_FACTOR_THRESHOLD_2 = 1.3;
 const ECMOFlow = ref(0);
 const SatA = ref(0);
 const SatR = ref(0);
@@ -51,14 +53,19 @@ const Hb = ref(0);
 const BSA = ref(0);
 
 const RFStyle = computed(() => {
-  if (RecirculationFactor.value > 1.3) {
+  if (RecirculationFactor.value > RECIRCULATION_FACTOR_THRESHOLD_2) {
     return 'red';
-  } else if (RecirculationFactor.value > 1.15) {
+  } else if (RecirculationFactor.value > RECIRCULATION_FACTOR_THRESHOLD_1) {
     return 'orange';
   } else {
     return 'green';
   }
 })
+
+const HideOtherValues = computed(() => {
+  console.log(RecirculationFactor.value < RECIRCULATION_FACTOR_THRESHOLD_1);
+  return RecirculationFactor.value < RECIRCULATION_FACTOR_THRESHOLD_1;
+});
 
 const RecirculationFactor = computed(() => {
   return (100 - SatCV.value) / (100 - SatD.value);
@@ -86,34 +93,6 @@ const CarringCapacityOfArterialBlood = computed(() => {
 const CarringCapacityOfVenousBlood = computed(() => {
   return Hb.value * 1.36 * SatCV.value;
 });
-
-/*func RecirculationFactor(SatCV, SatD) {
-  return (100-SatCV)/(100-SatD);
-}
-
-func CardiacOutput(ECMOFlow, SatA, SatR, SatCV, SatD) {
-  return ECMOFlow * (SatR - SatD) / (SatA - SatCV);
-}
-
-func OxygenDelivery(SatA, Hb) {
-  return SatA * (CarringCapacityOfArterialBlood(SatA, Hb)/100);
-}
-
-func OxygenConsumption(SatA, SatCV, Hb) {
-  return SatA * (CarringCapacityOfArterialBlood(SatA, Hb)-CarringCapacityOfVenousBlood(SatCV, Hb))/100;
-}
-
-func OxygenDeliveryIndex(SatA,SatCV, SatD, Hb, BSA) {
-  return (OxygenDelivery(SatA, Hb)/BSA)/RecirculationFactor(SatCV, SatD);
-}
-
-func CarringCapacityOfArterialBlood(SatA, Hb) {
-  return Hb * 1.36 * SatA;
-}
-
-func CarringCapacityOfVenousBlood(SatCV, Hb) {
-  return Hb * 1.36 * SatCV;
-}*/
 
 </script>
 
