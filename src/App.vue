@@ -32,7 +32,7 @@
       <p>CardiacOutput: {{CardiacOutput}}</p>
       <p>OxygenDelivery: {{OxygenDelivery}}</p>
       <p>OxygenConsumption: {{OxygenConsumption}}</p>
-      <p>OxygenDeliveryIndex: {{OxygenDeliveryIndex}}</p>
+      <p>Real OxygenDelivery: {{OxygenDeliveryReal}}</p>
       <p>CarringCapacityOfArterialBlood: {{CarringCapacityOfArterialBlood}}</p>
       <p>CarringCapacityOfVenousBlood: {{CarringCapacityOfVenousBlood}}</p>
     </div>
@@ -69,14 +69,14 @@ const CardiacOutput = computed(() => {
 });
 
 const OxygenDelivery = computed(() => {
-  return SatA.value * (CarringCapacityOfArterialBlood.value / 100);
+  return CardiacOutput.value * (CarringCapacityOfArterialBlood.value / 100);
 });
 
 const OxygenConsumption = computed(() => {
-  return SatA.value * (CarringCapacityOfArterialBlood.value - CarringCapacityOfVenousBlood.value) / 100;
+  return CardiacOutput.value * ((CarringCapacityOfArterialBlood.value - CarringCapacityOfVenousBlood.value) / 100);
 });
 
-const OxygenDeliveryIndex = computed(() => {
+const OxygenDeliveryReal = computed(() => {
   return (OxygenDelivery.value / BSA.value) / RecirculationFactor.value;
 });
 
