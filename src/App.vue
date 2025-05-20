@@ -37,6 +37,14 @@
       <p>Carring Capacity Of Venous Blood ml/min: <span v-if="HideOtherValues">{{CarringCapacityOfVenousBlood.toFixed(2)}}</span></p>
     </div>
   </main>
+  <footer>
+    <p>
+      The medical calculations and information provided on this website are for general informational purposes only. While we strive to ensure accuracy, all results and data are provided without warranty of any kind – express or implied – including but not limited to the accuracy, completeness, or suitability for any particular purpose.
+      This website does not provide medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
+      By using this website, you acknowledge and agree that the operators of this site are not liable for any damages or losses arising from the use of, or reliance on, the information or calculations provided.
+      Use of this site and its tools is entirely at your own risk.
+    </p>
+  </footer>
 </template>
 
 <script setup>
